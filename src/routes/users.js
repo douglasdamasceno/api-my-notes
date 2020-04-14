@@ -22,18 +22,20 @@ router.post("/register", async function (req, res) {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", async function (req, res) {
   const { email, password } = req.body;
+  console.log(req.body);
   try {
     let user = await User.findOne({ email });
+    console.log("user = ", user);
     if (!user) {
-      res.status(401).json({ error: "Incorrect email or password 1" });
+      res.status(401).json({ error: "Incorrect email or password!" });
     } else {
-      user.isCorrectPassword(password, function (error, same) {
+      user.isCorrectPassword(password, function (err, same) {
         if (!same) {
-          res.status(401).json({ error: "Incorrect email or password" });
+          res.status(401).json({ err: "Incorrect password or email!" });
         } else {
-          const token = jwt.sign(email, secret, { expiresIn: "1d" });
+          const token = jwt.sign({ email }, secret, { expiresIn: "10d" });
           res.json({ user: user, token: token });
         }
       });
